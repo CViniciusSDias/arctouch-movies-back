@@ -1,0 +1,3 @@
+upcoming_movies:
+    path: /movies/upcoming
+    controller: App\Controller\MoviesController::upcomingMovies
