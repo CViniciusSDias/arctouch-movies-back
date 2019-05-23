@@ -10,6 +10,7 @@ use App\Helper\PropertyAccessTrait;
  * @property string $imagePath
  * @property string $genres
  * @property SpecificDate $releaseDate
+ * @property string $overview
  */
 class Movie implements \JsonSerializable
 {
@@ -25,14 +26,17 @@ class Movie implements \JsonSerializable
     private $genres;
     /** @var SpecificDate */
     private $releaseDate;
+    /** @var string */
+    private $overview;
 
-    public function __construct(int $id, string $name, ?string $imagePath, array $genres, SpecificDate $releaseDate)
+    public function __construct(int $id, string $name, ?string $imagePath, array $genres, SpecificDate $releaseDate, string $overview)
     {
         $this->id = $id;
         $this->name = $name;
         $this->imagePath = $imagePath;
         $this->genres = $genres;
         $this->releaseDate = $releaseDate;
+        $this->overview = $overview;
     }
 
     public function jsonSerialize(): array

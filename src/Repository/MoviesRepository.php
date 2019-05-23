@@ -43,12 +43,25 @@ class MoviesRepository
         return $movieList;
     }
 
-    private function parseMovie(array $result)
+    public function retrieveMovieDetails(int $movieId): Movie
+    {
+        $url = $this->assembleApiUrl('/movie/' . $movieId);
+        $responseData = $this->fetchResponseData($url);
+
+        $movie = $this->parseMovie($responseData);
+        return $movie;
+    }
+
+    private function parseMovie(array $result): Movie
     {
         $imagePath = $result['poster_path'] ?? $result['backdrop_path'];
-        $genres = array_map([$this->genreRepository, 'getGenreById'], $result['genre_ids']);
+        $genres = array_key_exists('genre_ids', $result)
+            ? array_map([$this->genreRepository, 'getGenreById'], $result['genre_ids'])
+            : array_map(function (array $genreData) {
+                return $genreData['name'];
+            }, $result['genres']);
         $releaseDate = new SpecificDate(new \DateTime($result['release_date']));
 
-        return new Movie($result['id'], $result['title'], $imagePath, $genres, $releaseDate);
+        return new Movie($result['id'], $result['title'], $imagePath, $genres, $releaseDate, $result['overview']);
     }
 }
