@@ -2,24 +2,28 @@
 
 namespace App\Model;
 
+use App\Helper\PropertyAccessTrait;
+
 /**
  * @property string $name
  * @property string $imagePath
  * @property string $genres
- * @property \DateTime $releaseDate
+ * @property SpecificDate $releaseDate
  */
 class Movie implements \JsonSerializable
 {
+    use PropertyAccessTrait;
+
     /** @var string */
     private $name;
     /** @var string */
     private $imagePath;
     /** @var string[] */
     private $genres;
-    /** @var \DateTime */
+    /** @var SpecificDate */
     private $releaseDate;
 
-    public function __construct(string $name, ?string $imagePath, array $genres, \DateTime $releaseDate)
+    public function __construct(string $name, ?string $imagePath, array $genres, SpecificDate $releaseDate)
     {
         $this->name = $name;
         $this->imagePath = $imagePath;
@@ -27,20 +31,10 @@ class Movie implements \JsonSerializable
         $this->releaseDate = $releaseDate;
     }
 
-    public function __get(string $propertyName)
-    {
-        $methodName = 'get' . ucfirst($propertyName);
-        if (method_exists($this, $methodName)) {
-            return $this->$methodName();
-        }
-
-        return $this->$propertyName;
-    }
-
     public function jsonSerialize(): array
     {
         $returnData = get_object_vars($this);
-        $returnData['releaseDate'] = $this->releaseDate->format('Y-m-d');
+        $returnData['releaseDate'] = (string) $returnData['releaseDate'];
 
         return $returnData;
     }

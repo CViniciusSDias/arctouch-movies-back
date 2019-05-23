@@ -4,7 +4,8 @@ namespace App\Repository;
 
 use App\Helper\ResponseParserTrait;
 use App\Model\Movie;
-use App\Model\MovieList;
+use App\Model\SpecificDate;
+use App\Model\UpcomingMovieList;
 use GuzzleHttp\ClientInterface;
 
 class MoviesRepository
@@ -20,17 +21,20 @@ class MoviesRepository
         $this->genreRepository = $genreRepository;
     }
 
-    public function retrieveUpcomingMovieList(): MovieList
+    public function retrieveUpcomingMovieList(): UpcomingMovieList
     {
         $page = 1;
 
-        $movieList = new MovieList();
+        $movieList = new UpcomingMovieList();
         do {
             $url = $this->assembleApiUrl('/movie/upcoming', [
                 'page' => $page,
                 'region' => 'US',
             ]);
             $responseData = $this->fetchResponseData($url);
+            $movieList
+                ->setStartDate($responseData['dates']['maximum'])
+                ->setEndDate($responseData['dates']['minimum']);
 
             $pageMovies = array_map([$this, 'parseMovie'], $responseData['results']);
             $movieList->addMultipleMovies($pageMovies);
@@ -43,7 +47,7 @@ class MoviesRepository
     {
         $imagePath = $result['poster_path'] ?? $result['backdrop_path'];
         $genres = array_map([$this->genreRepository, 'getGenreById'], $result['genre_ids']);
-        $releaseDate = new \DateTime($result['release_date']);
+        $releaseDate = new SpecificDate(new \DateTime($result['release_date']));
 
         return new Movie($result['title'], $imagePath, $genres, $releaseDate);
     }
