@@ -5,3 +5,5 @@ upcoming_movies:
 movie_details:
     path: /movies/{movieId}
     controller: App\Controller\MoviesController::movieDetails
+    requirements:
+        movieId: '\d+'
