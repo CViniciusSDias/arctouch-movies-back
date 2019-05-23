@@ -4,11 +4,14 @@
 namespace App\Helper;
 
 use GuzzleHttp\ClientInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-trait ResponseParserTrait
+trait MovieDbApiResponseParserTrait
 {
     /** @var ClientInterface */
     private $httpClient;
+    /** @var ParameterBagInterface */
+    private $parameterPag;
 
     private function fetchResponseData(string $url): array
     {
@@ -25,10 +28,9 @@ trait ResponseParserTrait
 
     private function assembleApiUrl(string $path, ?array $queryParams = null): string
     {
-        $apiEndpoint = 'https://api.themoviedb.org/3';
-        $apiKey = '1f54bd990f1cdfb230adb312546d765d';
+        $apiEndpoint = $this->parameterPag->get('api_url');
         $defaultParams = [
-            'api_key' => $apiKey,
+            'api_key' => $this->parameterPag->get('api_key'),
             'language' => 'en-US',
         ];
         $queryParams = array_merge($defaultParams, $queryParams ?? []);

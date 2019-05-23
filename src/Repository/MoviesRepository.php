@@ -2,23 +2,25 @@
 
 namespace App\Repository;
 
-use App\Helper\ResponseParserTrait;
+use App\Helper\MovieDbApiResponseParserTrait;
 use App\Model\Movie;
 use App\Model\SpecificDate;
 use App\Model\UpcomingMovieList;
 use GuzzleHttp\ClientInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class MoviesRepository
 {
-    use ResponseParserTrait;
+    use MovieDbApiResponseParserTrait;
 
     /** @var GenreRepository */
     private $genreRepository;
 
-    public function __construct(ClientInterface $httpClient, GenreRepository $genreRepository)
+    public function __construct(ClientInterface $httpClient, GenreRepository $genreRepository, ParameterBagInterface $parameterBag)
     {
         $this->httpClient = $httpClient;
         $this->genreRepository = $genreRepository;
+        $this->parameterPag = $parameterBag;
     }
 
     public function retrieveUpcomingMovieList(): UpcomingMovieList

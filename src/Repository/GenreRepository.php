@@ -2,20 +2,22 @@
 
 namespace App\Repository;
 
-use App\Helper\ResponseParserTrait;
+use App\Helper\MovieDbApiResponseParserTrait;
 use GuzzleHttp\ClientInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class GenreRepository
 {
-    use ResponseParserTrait;
+    use MovieDbApiResponseParserTrait;
 
     /** @var array */
     private $genres;
 
-    public function __construct(ClientInterface $httpClient)
+    public function __construct(ClientInterface $httpClient, ParameterBagInterface $parameterBag)
     {
         $this->httpClient = $httpClient;
         $this->genres = [];
+        $this->parameterPag = $parameterBag;
     }
 
     public function getGenreById(int $id): string
