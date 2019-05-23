@@ -21,6 +21,6 @@ class MoviesController
     {
         $movieList = $this->moviesRepository->retrieveUpcomingMovieList();
 
-        return new JsonResponse($movieList);
+        return new JsonResponse($movieList, 200, ['Access-Control-Allow-Origin' => '*']);
     }
 }
