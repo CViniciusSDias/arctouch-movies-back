@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Helper\MovieDbApiResponseParserTrait;
+use App\Helper\MovieFactory;
 use App\Model\Movie;
 use App\Model\SpecificDate;
 use App\Model\UpcomingMovieList;
@@ -13,14 +14,16 @@ class MoviesRepository
 {
     use MovieDbApiResponseParserTrait;
 
-    /** @var GenreRepository */
-    private $genreRepository;
+    /**
+     * @var MovieFactory
+     */
+    private $movieFactory;
 
-    public function __construct(ClientInterface $httpClient, GenreRepository $genreRepository, ParameterBagInterface $parameterBag)
+    public function __construct(ClientInterface $httpClient, MovieFactory $movieFactory, ParameterBagInterface $parameterBag)
     {
         $this->httpClient = $httpClient;
-        $this->genreRepository = $genreRepository;
         $this->parameterPag = $parameterBag;
+        $this->movieFactory = $movieFactory;
     }
 
     public function retrieveUpcomingMovieList(): UpcomingMovieList
@@ -38,7 +41,7 @@ class MoviesRepository
                 ->setStartDate($responseData['dates']['maximum'])
                 ->setEndDate($responseData['dates']['minimum']);
 
-            $pageMovies = array_map([$this, 'parseMovie'], $responseData['results']);
+            $pageMovies = array_map([$this->movieFactory, 'createFromApiResultArray'], $responseData['results']);
             $movieList->addMultipleMovies($pageMovies);
         } while ($page++ < $responseData['total_pages']);
 
@@ -50,20 +53,7 @@ class MoviesRepository
         $url = $this->assembleApiUrl('/movie/' . $movieId);
         $responseData = $this->fetchResponseData($url);
 
-        $movie = $this->parseMovie($responseData);
+        $movie = $this->movieFactory->createFromApiResultArray($responseData);
         return $movie;
-    }
-
-    private function parseMovie(array $result): Movie
-    {
-        $imagePath = $result['poster_path'] ?? $result['backdrop_path'];
-        $genres = array_key_exists('genre_ids', $result)
-            ? array_map([$this->genreRepository, 'getGenreById'], $result['genre_ids'])
-            : array_map(function (array $genreData) {
-                return $genreData['name'];
-            }, $result['genres']);
-        $releaseDate = new SpecificDate(new \DateTime($result['release_date']));
-
-        return new Movie($result['id'], $result['title'], $imagePath, $genres, $releaseDate, $result['overview']);
     }
 }

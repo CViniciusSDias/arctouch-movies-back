@@ -36,13 +36,13 @@ class UpcomingMovieList implements \JsonSerializable
 
     public function setStartDate(string $startDate): self
     {
-        $this->startDate = new SpecificDate(new \DateTime($startDate));
+        $this->startDate = SpecificDate::fromString($startDate);
         return $this;
     }
 
     public function setEndDate(string $endDate): self
     {
-        $this->endDate = new SpecificDate(new \DateTime($endDate));
+        $this->endDate = SpecificDate::fromString($endDate);
         return $this;
     }
 
