@@ -18,7 +18,7 @@ class GenreRepository
         $this->genres = [];
     }
 
-    public function getGenreById(int $id)
+    public function getGenreById(int $id): string
     {
         if (array_key_exists($id, $this->genres)) {
             return $this->genres[$id];

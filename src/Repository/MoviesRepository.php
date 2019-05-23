@@ -11,11 +11,7 @@ class MoviesRepository
 {
     use ResponseParserTrait;
 
-    private const API_ENDPOINT = 'https://api.themoviedb.org/3';
-    private const API_KEY = '1f54bd990f1cdfb230adb312546d765d';
-    /**
-     * @var GenreRepository
-     */
+    /** @var GenreRepository */
     private $genreRepository;
 
     public function __construct(ClientInterface $httpClient, GenreRepository $genreRepository)

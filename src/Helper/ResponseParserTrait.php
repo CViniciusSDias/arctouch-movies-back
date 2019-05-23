@@ -13,7 +13,7 @@ trait ResponseParserTrait
     private function fetchResponseData(string $url): array
     {
         $response = $this->httpClient->request('GET', $url);
-        $responseBody = (string)$response->getBody();
+        $responseBody = $response->getBody();
         $responseData = json_decode($responseBody, true);
 
         if ($response->getStatusCode() !== 200) {
