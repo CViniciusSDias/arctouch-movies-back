@@ -6,6 +6,7 @@ use GuzzleHttp\Exception\ClientException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ExceptionListener
 {
@@ -23,6 +24,9 @@ class ExceptionListener
                     $exceptionResponse->getStatusCode(),
                     $exceptionResponse->getHeaders()
                 );
+                break;
+            case NotFoundHttpException::class:
+                $response = new Response('', 404);
                 break;
             case \Exception::class:
                 /** @var \Exception $exception */
