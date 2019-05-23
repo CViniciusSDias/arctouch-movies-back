@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Helper\MovieDbApiResponseParserTrait;
 use App\Helper\MovieFactory;
 use App\Model\Movie;
+use App\Model\MovieList;
 use App\Model\SpecificDate;
 use App\Model\UpcomingMovieList;
 use GuzzleHttp\ClientInterface;
@@ -32,11 +33,10 @@ class MoviesRepository
 
         $movieList = new UpcomingMovieList();
         do {
-            $url = $this->assembleApiUrl('/movie/upcoming', [
+            $responseData = $this->fetchResponseData('/movie/upcoming', [
                 'page' => $page,
                 'region' => 'US',
             ]);
-            $responseData = $this->fetchResponseData($url);
             $movieList
                 ->setStartDate($responseData['dates']['maximum'])
                 ->setEndDate($responseData['dates']['minimum']);
@@ -50,10 +50,28 @@ class MoviesRepository
 
     public function retrieveMovieDetails(int $movieId): Movie
     {
-        $url = $this->assembleApiUrl('/movie/' . $movieId);
-        $responseData = $this->fetchResponseData($url);
+        $responseData = $this->fetchResponseData('/movie/' . $movieId);
 
         $movie = $this->movieFactory->createFromApiResultArray($responseData);
         return $movie;
+    }
+
+    public function retrieveMovieListByQuery(string $query): MovieList
+    {
+        $page = 1;
+
+        $movieList = new MovieList();
+        do {
+            $responseData = $this->fetchResponseData('/movie/upcoming', [
+                'page' => $page,
+                'region' => 'US',
+                'query' => $query
+            ]);
+
+            $pageMovies = array_map([$this->movieFactory, 'createFromApiResultArray'], $responseData['results']);
+            $movieList->addMultipleMovies($pageMovies);
+        } while ($page++ < $responseData['total_pages']);
+
+        return $movieList;
     }
 }

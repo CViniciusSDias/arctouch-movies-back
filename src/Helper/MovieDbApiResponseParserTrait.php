@@ -13,8 +13,9 @@ trait MovieDbApiResponseParserTrait
     /** @var ParameterBagInterface */
     private $parameterPag;
 
-    private function fetchResponseData(string $url): array
+    private function fetchResponseData(string $path, ?array $queryParams = null): array
     {
+        $url = $this->assembleApiUrl($path, $queryParams);
         $response = $this->httpClient->request('GET', $url);
         $responseBody = $response->getBody();
         $responseData = json_decode($responseBody, true);

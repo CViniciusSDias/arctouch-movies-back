@@ -2,37 +2,12 @@
 
 namespace App\Model;
 
-class UpcomingMovieList implements \JsonSerializable
+class UpcomingMovieList extends MovieList implements \JsonSerializable
 {
-    protected $movies;
     /** @var SpecificDate */
     private $startDate;
     /** @var SpecificDate */
     private $endDate;
-
-    public function __construct()
-    {
-        $this->movies = [];
-    }
-
-    public function addMultipleMovies(array $moviesArray)
-    {
-        foreach ($moviesArray as $movie) {
-            $this->addMovie($movie);
-        }
-    }
-
-    /**
-     * @return Movie[]
-     */
-    public function getMovies(): array
-    {
-        usort($this->movies, function (Movie $a, Movie $b) {
-            return strcmp($a->name, $b->name);
-        });
-
-        return $this->movies;
-    }
 
     public function setStartDate(string $startDate): self
     {
@@ -48,17 +23,12 @@ class UpcomingMovieList implements \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        return [
-            'dates' => [
-                'start' => (string) $this->startDate,
-                'end' => (string) $this->endDate,
-            ],
-            'movies' => $this->getMovies(),
+        $serializedData = parent::jsonSerialize();
+        $serializedData['dates'] = [
+            'start' => (string) $this->startDate,
+            'end' => (string) $this->endDate,
         ];
-    }
 
-    protected function addMovie(Movie $movie)
-    {
-        $this->movies[] = $movie;
+        return $serializedData;
     }
 }

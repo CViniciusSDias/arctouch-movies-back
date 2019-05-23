@@ -30,8 +30,7 @@ class GenreRepository
             throw new \DomainException('Unknown genre');
         }
 
-        $url = $this->assembleApiUrl('/genre/movie/list');
-        $responseData = $this->fetchResponseData($url);
+        $responseData = $this->fetchResponseData('/genre/movie/list');
 
         if (!is_array($responseData['genres']) || empty($responseData['genres'])) {
             throw new \DomainException('No genres found. API Error', 404);
