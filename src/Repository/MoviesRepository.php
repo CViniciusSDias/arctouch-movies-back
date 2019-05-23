@@ -49,6 +49,6 @@ class MoviesRepository
         $genres = array_map([$this->genreRepository, 'getGenreById'], $result['genre_ids']);
         $releaseDate = new SpecificDate(new \DateTime($result['release_date']));
 
-        return new Movie($result['title'], $imagePath, $genres, $releaseDate);
+        return new Movie($result['id'], $result['title'], $imagePath, $genres, $releaseDate);
     }
 }

@@ -5,6 +5,7 @@ namespace App\Model;
 use App\Helper\PropertyAccessTrait;
 
 /**
+ * @property int $id
  * @property string $name
  * @property string $imagePath
  * @property string $genres
@@ -14,6 +15,8 @@ class Movie implements \JsonSerializable
 {
     use PropertyAccessTrait;
 
+    /** @var int */
+    private $id;
     /** @var string */
     private $name;
     /** @var string */
@@ -23,8 +26,9 @@ class Movie implements \JsonSerializable
     /** @var SpecificDate */
     private $releaseDate;
 
-    public function __construct(string $name, ?string $imagePath, array $genres, SpecificDate $releaseDate)
+    public function __construct(int $id, string $name, ?string $imagePath, array $genres, SpecificDate $releaseDate)
     {
+        $this->id = $id;
         $this->name = $name;
         $this->imagePath = $imagePath;
         $this->genres = $genres;
