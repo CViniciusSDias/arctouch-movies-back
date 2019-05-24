@@ -9,5 +9,5 @@ movie_details:
         movieId: '\d+'
 
 movie_by_query:
-    path: /movies/query/{query}
+    path: /movies/query
     controller: App\Controller\MoviesController::byQuery
