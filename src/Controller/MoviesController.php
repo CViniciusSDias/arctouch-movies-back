@@ -31,4 +31,11 @@ class MoviesController
 
         return new JsonResponse($movie, 200, ['Access-Control-Allow-Origin' => '*']);
     }
+
+    public function byQuery(string $query): Response
+    {
+        $movieList = $this->moviesRepository->retrieveMovieListByQuery($query);
+
+        return new JsonResponse($movieList, 200, ['Access-Control-Allow-Origin' => '*']);
+    }
 }

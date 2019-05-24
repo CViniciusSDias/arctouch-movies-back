@@ -29,6 +29,7 @@ class ExceptionListener
                 $response = new Response('', 404);
                 break;
             case \Exception::class:
+            case \InvalidArgumentException::class:
                 /** @var \Exception $exception */
                 $errorCode = $exception->getCode() >= 200 && $exception->getCode() <= 500
                     ? $exception->getCode()

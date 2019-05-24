@@ -4,10 +4,10 @@ namespace App\Model;
 
 class SpecificDate
 {
-    /** @var \DateTime */
+    /** @var \DateTimeInterface */
     private $dateTime;
 
-    public function __construct(\DateTime $dateTime)
+    public function __construct(\DateTimeInterface $dateTime)
     {
         $this->dateTime = $dateTime;
     }
@@ -20,5 +20,14 @@ class SpecificDate
     public function __toString()
     {
         return $this->dateTime->format('Y-m-d');
+    }
+
+    public function getDateTime(): \DateTimeInterface
+    {
+        if ($this->dateTime instanceof \DateTimeImmutable) {
+            return $this->dateTime;
+        }
+
+        return \DateTimeImmutable::createFromMutable($this->dateTime);
     }
 }

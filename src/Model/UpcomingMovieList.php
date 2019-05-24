@@ -11,13 +11,23 @@ class UpcomingMovieList extends MovieList implements \JsonSerializable
 
     public function setStartDate(string $startDate): self
     {
-        $this->startDate = SpecificDate::fromString($startDate);
+        $specificDate = SpecificDate::fromString($startDate);
+        if (!is_null($this->endDate) && $specificDate->getDateTime() >= $this->endDate->getDateTime()) {
+            throw new \InvalidArgumentException('Start date must be before end date', 500);
+        }
+
+        $this->startDate = $specificDate;
         return $this;
     }
 
     public function setEndDate(string $endDate): self
     {
-        $this->endDate = SpecificDate::fromString($endDate);
+        $specificDate = SpecificDate::fromString($endDate);
+        if (!is_null($this->startDate) && $specificDate->getDateTime() <= $this->startDate->getDateTime()) {
+            throw new \InvalidArgumentException('End date must be after start date', 500);
+        }
+
+        $this->endDate = $specificDate;
         return $this;
     }
 
