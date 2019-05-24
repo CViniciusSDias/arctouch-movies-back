@@ -7,3 +7,7 @@ movie_details:
     controller: App\Controller\MoviesController::movieDetails
     requirements:
         movieId: '\d+'
+
+movie_by_query:
+    path: /movies/query/{query}
+    controller: App\Controller\MoviesController::byQuery
