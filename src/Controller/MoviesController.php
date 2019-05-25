@@ -23,14 +23,14 @@ class MoviesController
     {
         $movieList = $this->moviesRepository->retrieveUpcomingMoviesList();
 
-        return new JsonResponse($movieList, 200, ['Access-Control-Allow-Origin' => '*']);
+        return new JsonResponse($movieList);
     }
 
     public function movieDetails(int $movieId): Response
     {
         $movie = $this->moviesRepository->retrieveMovieDetails($movieId);
 
-        return new JsonResponse($movie, 200, ['Access-Control-Allow-Origin' => '*']);
+        return new JsonResponse($movie);
     }
 
     public function byQuery(Request $request): Response
@@ -42,6 +42,6 @@ class MoviesController
 
         $movieList = $this->moviesRepository->retrieveMovieListByQuery($query);
 
-        return new JsonResponse($movieList, 200, ['Access-Control-Allow-Origin' => '*']);
+        return new JsonResponse($movieList);
     }
 }
