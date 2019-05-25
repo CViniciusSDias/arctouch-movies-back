@@ -6,9 +6,9 @@ use App\Helper\MovieDbApiResponseParserTrait;
 use App\Helper\MovieFactory;
 use App\Model\Movie;
 use App\Model\MovieList;
-use App\Model\SpecificDate;
 use App\Model\UpcomingMovieList;
 use GuzzleHttp\ClientInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class MoviesRepository
@@ -20,15 +20,25 @@ class MoviesRepository
      */
     private $movieFactory;
 
-    public function __construct(ClientInterface $httpClient, MovieFactory $movieFactory, ParameterBagInterface $parameterBag)
+    /** @var CacheItemPoolInterface */
+    private $cachingSystem;
+
+    public function __construct(ClientInterface $httpClient, MovieFactory $movieFactory, ParameterBagInterface $parameterBag, CacheItemPoolInterface $cachingSystem)
     {
         $this->httpClient = $httpClient;
         $this->parameterPag = $parameterBag;
         $this->movieFactory = $movieFactory;
+        $this->cachingSystem = $cachingSystem;
     }
 
     public function retrieveUpcomingMovieList(): UpcomingMovieList
     {
+        $cachedMovies = $this->cachingSystem->getItem('movies.upcoming');
+
+        if ($cachedMovies->isHit()) {
+            return $cachedMovies->get();
+        }
+
         $movieList = new UpcomingMovieList();
         $this->retrievePaginatedMovies(
             $movieList,
@@ -40,6 +50,10 @@ class MoviesRepository
                     ->setEndDate($responseData['dates']['maximum']);
             }
         );
+
+        $cachedMovies->expiresAt(new \DateTimeImmutable('tomorrow'));
+        $cachedMovies->set($movieList);
+        $this->cachingSystem->save($cachedMovies);
 
         return $movieList;
     }
@@ -54,11 +68,21 @@ class MoviesRepository
 
     public function retrieveMovieListByQuery(string $query): MovieList
     {
+        $hashedQuery = md5($query);
+        $cachedMovies = $this->cachingSystem->getItem("movies.query.$hashedQuery");
+        if ($cachedMovies->isHit()) {
+            return $cachedMovies->get();
+        }
+
         $movieList = new MovieList();
         $this->retrievePaginatedMovies($movieList, '/search/movie', [
             'region' => 'US',
             'query' => $query
         ]);
+
+        $cachedMovies->set($movieList);
+        $cachedMovies->expiresAfter(new \DateInterval('P1W'));
+        $this->cachingSystem->save($cachedMovies);
 
         return $movieList;
     }

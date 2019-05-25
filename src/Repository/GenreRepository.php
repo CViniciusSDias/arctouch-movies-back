@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Helper\MovieDbApiResponseParserTrait;
 use GuzzleHttp\ClientInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class GenreRepository
@@ -12,12 +13,15 @@ class GenreRepository
 
     /** @var array */
     private $genres;
+    /** @var CacheItemPoolInterface */
+    private $cachingSystem;
 
-    public function __construct(ClientInterface $httpClient, ParameterBagInterface $parameterBag)
+    public function __construct(ClientInterface $httpClient, ParameterBagInterface $parameterBag, CacheItemPoolInterface $cachingSystem)
     {
         $this->httpClient = $httpClient;
         $this->genres = [];
         $this->parameterPag = $parameterBag;
+        $this->cachingSystem = $cachingSystem;
     }
 
     public function getGenreById(int $id): string
@@ -30,6 +34,20 @@ class GenreRepository
             throw new \DomainException('Unknown genre');
         }
 
+        $this->fetchGenres();
+
+        return $this->getGenreById($id);
+    }
+
+    private function fetchGenres(): void
+    {
+        $cachedGenres = $this->cachingSystem->getItem('genres.all');
+        if ($cachedGenres->isHit()) {
+            $this->genres = $cachedGenres->get();
+
+            return;
+        }
+
         $responseData = $this->fetchResponseData('/genre/movie/list');
 
         if (!is_array($responseData['genres']) || empty($responseData['genres'])) {
@@ -40,6 +58,7 @@ class GenreRepository
             $this->genres[$genre['id']] = $genre['name'];
         }
 
-        return $this->getGenreById($id);
+        $cachedGenres->set($this->genres);
+        $this->cachingSystem->save($cachedGenres);
     }
 }
