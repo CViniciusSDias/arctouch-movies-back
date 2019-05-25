@@ -4,8 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-    api_key: '1f54bd990f1cdfb230adb312546d765d'
+    api_key: '%env(API_KEY)'
     api_url: 'https://api.themoviedb.org/3'
+    client_url: '%env(CLIENT_URL)%'
 
 services:
     # default configuration for services in *this* file
@@ -38,3 +39,7 @@ services:
     App\EventListener\ExceptionListener:
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
+
+    App\EventListener\CorsListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.response }
