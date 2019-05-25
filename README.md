@@ -69,3 +69,20 @@ If a movie has the *poster_path* available it is used as its image. Otherwise th
 
 The search for movies was not implemented from the upcoming movies list. This way the user can search movies from any release date.
 Also the query was used as it is in the API. The movie list isn't filtered to show only the movies that have the query in their names specifically. 
+
+## Libraries used
+
+- Symfony
+    - Symfony is a simple yet powerful and extensible framework for web applications so it was used to improve productivity.
+    - The Symfony Components were used for:
+        - Routing (and Controllers)
+        - Dependency Injection (that can be seen in the `config/services.yaml` file)
+        - Configuration (e.g. *ParameterBagInterface*  used in the *MovieDbApiResponseParserTrait*)
+        - Caching (since it implements the PSR-6 and can be changed to any other implementation)
+    - Most of the code (the core part) is still framework agnostic
+- Guzzle
+    - Guzzle is the most famous PHP HTTP Client. Since Symfony HTTP Client will only be stable in the 4.3 version (still in beta), it makes completally sense to use Guzzle which is a very stable tool.
+    - It was used to execute the HTTP Requests to the TMDb API. Its use can be seen in the *MovieDbApiResponseParserTrait*
+-  PHPUnit
+    - PHPUnit is the leading tool for Unit Tests with PHP.
+    - Inside the `tests` folder reside all the unit tests written for the application.
