@@ -10,6 +10,8 @@ use App\Repository\MoviesRepository;
 use GuzzleHttp\ClientInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Cache\CacheItemInterface;
+use Psr\Cache\CacheItemPoolInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\StreamInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -19,6 +21,8 @@ class MoviesRepositoryTest extends TestCase
     private $movieMock;
     /** @var MockObject */
     private $movieFactoryMock;
+    /** @var MockObject */
+    private $cacheMock;
 
     protected function setUp(): void
     {
@@ -31,6 +35,8 @@ class MoviesRepositoryTest extends TestCase
             ->getMockBuilder(MovieFactory::class)
             ->disableOriginalConstructor()
             ->getMock();
+
+        $this->cacheMock = $this->createMock(CacheItemPoolInterface::class);
     }
 
     public function testRetrieveUpcomingMovies()
@@ -43,10 +49,11 @@ class MoviesRepositoryTest extends TestCase
             ->method('createFromApiResultArray')
             ->willReturn($this->movieMock);
         $parameterBagMock = $this->getParameterBagMock();
+        $cacheMock = $this->getCacheMock('movies.upcoming');
 
-        $moviesRepository = new MoviesRepository($httpClientMock, $this->movieFactoryMock, $parameterBagMock);
+        $repository = new MoviesRepository($httpClientMock, $this->movieFactoryMock, $parameterBagMock, $cacheMock);
 
-        $upcomingMovieList = $moviesRepository->retrieveUpcomingMovieList();
+        $upcomingMovieList = $repository->retrieveUpcomingMovieList();
 
         static::assertInstanceOf(UpcomingMovieList::class, $upcomingMovieList);
         static::assertCount(2, $upcomingMovieList->getMovies());
@@ -63,8 +70,8 @@ class MoviesRepositoryTest extends TestCase
             ->willReturn($this->movieMock);
         $parameterBagMock = $this->getParameterBagMock();
 
-        $moviesRepositóry = new MoviesRepository($httpClientMock, $this->movieFactoryMock, $parameterBagMock);
-        $movie = $moviesRepositóry->retrieveMovieDetails(123456);
+        $repository = new MoviesRepository($httpClientMock, $this->movieFactoryMock, $parameterBagMock, $this->cacheMock);
+        $movie = $repository->retrieveMovieDetails(123456);
 
         static::assertInstanceOf(Movie::class, $movie);
     }
@@ -80,9 +87,11 @@ class MoviesRepositoryTest extends TestCase
             ->method('createFromApiResultArray')
             ->willReturn($this->movieMock);
         $parameterBagMock = $this->getParameterBagMock();
+        $cacheKey = 'movies.query.' . md5($query);
+        $cacheMock = $this->getCacheMock($cacheKey);
 
-        $moviesRepository = new MoviesRepository($httpClientMock, $this->movieFactoryMock, $parameterBagMock);
-        $movieList = $moviesRepository->retrieveMovieListByQuery($query);
+        $repository = new MoviesRepository($httpClientMock, $this->movieFactoryMock, $parameterBagMock, $cacheMock);
+        $movieList = $repository->retrieveMovieListByQuery($query);
 
         static::assertInstanceOf(MovieList::class, $movieList);
         static::assertCount(1, $movieList->getMovies());
@@ -128,5 +137,20 @@ class MoviesRepositoryTest extends TestCase
                 )->willReturnOnConsecutiveCalls('https://api.themoviedb.org/3', '1f54bd990f1cdfb230adb312546d765d');
 
         return $parameterBagMock;
+    }
+
+    private function getCacheMock(string $cacheKey)
+    {
+        $itemMock = $this->createMock(CacheItemInterface::class);
+        $itemMock->expects($this->once())
+            ->method('isHit')
+            ->willReturn(false);
+
+        $this->cacheMock->expects($this->once())
+            ->method('getItem')
+            ->with($this->equalTo($cacheKey))
+            ->willReturn($itemMock);
+
+        return $this->cacheMock;
     }
 }
