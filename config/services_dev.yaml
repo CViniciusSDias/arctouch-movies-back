@@ -1,3 +1,0 @@
-services:
-    Symfony\Component\Cache\Adapter\FilesystemAdapter: ~
-    Psr\Cache\CacheItemPoolInterface: '@Symfony\Component\Cache\Adapter\FilesystemAdapter'
