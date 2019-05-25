@@ -2,7 +2,7 @@
 
 namespace App\Model;
 
-class UpcomingMovieList extends MovieList implements \JsonSerializable
+class UpcomingMoviesList extends MovieList implements \JsonSerializable
 {
     /** @var SpecificDate */
     private $startDate;

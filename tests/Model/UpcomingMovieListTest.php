@@ -2,17 +2,17 @@
 
 namespace App\Tests\Model;
 
-use App\Model\UpcomingMovieList;
+use App\Model\UpcomingMoviesList;
 use PHPUnit\Framework\TestCase;
 
 class UpcomingMovieListTest extends TestCase
 {
-    /** @var UpcomingMovieList */
+    /** @var UpcomingMoviesList */
     private $list;
 
     protected function setUp(): void
     {
-        $this->list = new UpcomingMovieList();
+        $this->list = new UpcomingMoviesList();
     }
 
     public function testEndDateMustBeAfterStartDate()

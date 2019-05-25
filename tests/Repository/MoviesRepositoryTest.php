@@ -5,7 +5,7 @@ namespace App\Tests\Repository;
 use App\Helper\MovieFactory;
 use App\Model\Movie;
 use App\Model\MovieList;
-use App\Model\UpcomingMovieList;
+use App\Model\UpcomingMoviesList;
 use App\Repository\MoviesRepository;
 use GuzzleHttp\ClientInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -53,9 +53,9 @@ class MoviesRepositoryTest extends TestCase
 
         $repository = new MoviesRepository($httpClientMock, $this->movieFactoryMock, $parameterBagMock, $cacheMock);
 
-        $upcomingMovieList = $repository->retrieveUpcomingMovieList();
+        $upcomingMovieList = $repository->retrieveUpcomingMoviesList();
 
-        static::assertInstanceOf(UpcomingMovieList::class, $upcomingMovieList);
+        static::assertInstanceOf(UpcomingMoviesList::class, $upcomingMovieList);
         static::assertCount(2, $upcomingMovieList->getMovies());
     }
 

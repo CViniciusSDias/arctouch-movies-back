@@ -6,7 +6,7 @@ use App\Helper\MovieDbApiResponseParserTrait;
 use App\Helper\MovieFactory;
 use App\Model\Movie;
 use App\Model\MovieList;
-use App\Model\UpcomingMovieList;
+use App\Model\UpcomingMoviesList;
 use GuzzleHttp\ClientInterface;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -31,7 +31,7 @@ class MoviesRepository
         $this->cachingSystem = $cachingSystem;
     }
 
-    public function retrieveUpcomingMovieList(): UpcomingMovieList
+    public function retrieveUpcomingMoviesList(): UpcomingMoviesList
     {
         $cachedMovies = $this->cachingSystem->getItem('movies.upcoming');
 
@@ -39,7 +39,7 @@ class MoviesRepository
             return $cachedMovies->get();
         }
 
-        $movieList = new UpcomingMovieList();
+        $movieList = new UpcomingMoviesList();
         $this->retrievePaginatedMovies(
             $movieList,
             '/movie/upcoming',
