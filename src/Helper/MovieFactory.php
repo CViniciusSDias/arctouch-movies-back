@@ -20,7 +20,7 @@ class MovieFactory
 
     public function createFromApiResultArray(array $result): Movie
     {
-        $imagePath = $result['poster_path'] ?? $result['backdrop_path'];
+        $imagePath = $result['poster_path'] ?? ($result['backdrop_path'] ?? null);
         $genres = $this->retrieveGenreNames($result);
         $releaseDate = SpecificDate::fromString($result['release_date']);
 

@@ -8,7 +8,7 @@ use App\Helper\PropertyAccessTrait;
  * @property int $id
  * @property string $name
  * @property string $imagePath
- * @property string $genres
+ * @property string[] $genres
  * @property SpecificDate $releaseDate
  * @property string $overview
  */
