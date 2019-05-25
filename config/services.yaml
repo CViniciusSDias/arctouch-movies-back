@@ -31,8 +31,9 @@ services:
     GuzzleHttp\Client: ~
     GuzzleHttp\ClientInterface: '@GuzzleHttp\Client'
 
-    Symfony\Component\Cache\Adapter\FilesystemAdapter: ~
-    Psr\Cache\CacheItemPoolInterface: '@Symfony\Component\Cache\Adapter\FilesystemAdapter'
+    Psr\Cache\CacheItemPoolInterface:
+        factory: 'Symfony\Component\Cache\Adapter\RedisAdapter:createConnection'
+        arguments: ['%env(REDIS_URL)%']
 
     App\EventListener\ExceptionListener:
         tags:
