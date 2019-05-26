@@ -49,7 +49,7 @@
         "post-update-cmd": [
             "@auto-scripts"
         ],
-        "phpstan": "phpstan analyse -l 5 src tests",
+        "phpstan": "phpstan analyse -l 3 src",
         "check": [
             "phpcs",
             "@phpstan",
