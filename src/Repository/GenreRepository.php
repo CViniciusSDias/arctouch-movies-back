@@ -16,8 +16,11 @@ class GenreRepository
     /** @var CacheItemPoolInterface */
     private $cachingSystem;
 
-    public function __construct(ClientInterface $httpClient, ParameterBagInterface $parameterBag, CacheItemPoolInterface $cachingSystem)
-    {
+    public function __construct(
+        ClientInterface $httpClient,
+        ParameterBagInterface $parameterBag,
+        CacheItemPoolInterface $cachingSystem
+    ) {
         $this->httpClient = $httpClient;
         $this->genres = [];
         $this->parameterPag = $parameterBag;

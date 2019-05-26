@@ -23,6 +23,10 @@ class MoviesRepositoryTest extends TestCase
     private $movieFactoryMock;
     /** @var MockObject */
     private $cacheMock;
+    /** @var string */
+    private $apiUrl = 'https://api.themoviedb.org/3';
+    /** @var string string */
+    private $apiKey = '1f54bd990f1cdfb230adb312546d765d';
 
     protected function setUp(): void
     {
@@ -41,7 +45,7 @@ class MoviesRepositoryTest extends TestCase
 
     public function testRetrieveUpcomingMovies()
     {
-        $url = 'https://api.themoviedb.org/3/movie/upcoming?api_key=1f54bd990f1cdfb230adb312546d765d&language=en-US&page=1&region=US';
+        $url = "{$this->apiUrl}/movie/upcoming?api_key={$this->apiKey}&language=en-US&page=1&region=US";
 
         $responseMock = $this->getResponseMock(__DIR__ . '/../data/sample-upcoming-movies-response.txt');
         $httpClientMock = $this->getHttpClientMock($url, $responseMock);
@@ -61,7 +65,7 @@ class MoviesRepositoryTest extends TestCase
 
     public function testRetrieveMovieDetails()
     {
-        $url = 'https://api.themoviedb.org/3/movie/123456?api_key=1f54bd990f1cdfb230adb312546d765d&language=en-US';
+        $url = "{$this->apiUrl}/movie/123456?api_key={$this->apiKey}&language=en-US";
 
         $responseMock = $this->getResponseMock(__DIR__ . '/../data/sample-movie-detail-response.txt');
         $httpClientMock = $this->getHttpClientMock($url, $responseMock);
@@ -70,7 +74,12 @@ class MoviesRepositoryTest extends TestCase
             ->willReturn($this->movieMock);
         $parameterBagMock = $this->getParameterBagMock();
 
-        $repository = new MoviesRepository($httpClientMock, $this->movieFactoryMock, $parameterBagMock, $this->cacheMock);
+        $repository = new MoviesRepository(
+            $httpClientMock,
+            $this->movieFactoryMock,
+            $parameterBagMock,
+            $this->cacheMock
+        );
         $movie = $repository->retrieveMovieDetails(123456);
 
         static::assertInstanceOf(Movie::class, $movie);
@@ -79,7 +88,7 @@ class MoviesRepositoryTest extends TestCase
     public function testRetrieveMovieListByQuery()
     {
         $query = 'Query';
-        $url = 'https://api.themoviedb.org/3/search/movie?api_key=1f54bd990f1cdfb230adb312546d765d&language=en-US&page=1&region=US&query=' . $query;
+        $url = "{$this->apiUrl}/search/movie?api_key={$this->apiKey}&language=en-US&page=1&region=US&query=$query";
 
         $responseMock = $this->getResponseMock(__DIR__ . '/../data/sample-movies-by-query-response.txt');
         $httpClientMock = $this->getHttpClientMock($url, $responseMock);
@@ -134,7 +143,7 @@ class MoviesRepositoryTest extends TestCase
             ->withConsecutive(
                 [$this->equalTo('api_url')],
                 [$this->equalTo('api_key')],
-                )->willReturnOnConsecutiveCalls('https://api.themoviedb.org/3', '1f54bd990f1cdfb230adb312546d765d');
+            )->willReturnOnConsecutiveCalls($this->apiUrl, $this->apiKey);
 
         return $parameterBagMock;
     }

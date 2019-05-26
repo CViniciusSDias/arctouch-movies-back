@@ -23,8 +23,12 @@ class MoviesRepository
     /** @var CacheItemPoolInterface */
     private $cachingSystem;
 
-    public function __construct(ClientInterface $httpClient, MovieFactory $movieFactory, ParameterBagInterface $parameterBag, CacheItemPoolInterface $cachingSystem)
-    {
+    public function __construct(
+        ClientInterface $httpClient,
+        MovieFactory $movieFactory,
+        ParameterBagInterface $parameterBag,
+        CacheItemPoolInterface $cachingSystem
+    ) {
         $this->httpClient = $httpClient;
         $this->parameterPag = $parameterBag;
         $this->movieFactory = $movieFactory;

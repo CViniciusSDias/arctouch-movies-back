@@ -29,8 +29,14 @@ class Movie implements \JsonSerializable
     /** @var string */
     private $overview;
 
-    public function __construct(int $id, string $name, ?string $imagePath, array $genres, SpecificDate $releaseDate, string $overview)
-    {
+    public function __construct(
+        int $id,
+        string $name,
+        ?string $imagePath,
+        array $genres,
+        SpecificDate $releaseDate,
+        string $overview
+    ) {
         $this->id = $id;
         $this->name = $name;
         $this->imagePath = $imagePath;
